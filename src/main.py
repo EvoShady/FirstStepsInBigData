@@ -12,15 +12,15 @@ def main():
         .getOrCreate()
 
     # Read from csv file
-    df = spark.read.option('multiline', 'true').csv('data/myFile0.csv', header=True, dateFormat='dd-MM-yyyy')
+    data_frame = spark.read.option('multiline', 'true').csv('data/myFile0.csv', header=True, dateFormat='dd-MM-yyyy')
     # Set column types
-    df = df.withColumn('Elementary School Cases', df['Elementary School Cases'].cast(IntegerType()))
-    df = df.withColumn('Middle School Cases', df['Middle School Cases'].cast(IntegerType()))
-    df = df.withColumn('High School Cases', df['High School Cases'].cast(IntegerType()))
-    df = df.withColumn('Reporting Date', to_date(df['Reporting Date'], 'dd-MM-yyyy'))
+    data_frame = data_frame.withColumn('Elementary School Cases', data_frame['Elementary School Cases'].cast(IntegerType()))
+    data_frame = data_frame.withColumn('Middle School Cases', data_frame['Middle School Cases'].cast(IntegerType()))
+    data_frame = data_frame.withColumn('High School Cases', data_frame['High School Cases'].cast(IntegerType()))
+    data_frame = data_frame.withColumn('Reporting Date', to_date(data_frame['Reporting Date'], 'dd-MM-yyyy'))
     # Displays the content of the DataFrame to stdout
-    df.show()
-    df.printSchema()
+    data_frame.show()
+    data_frame.printSchema()
 
 
 if __name__ == '__main__':

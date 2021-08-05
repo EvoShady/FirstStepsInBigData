@@ -1,6 +1,10 @@
 import helping_functions as my_project_functions
 from my_daframe_api import MyDataframeAPI
 
+"""
+Main Program
+"""
+
 
 def main():
     my_project_functions.import_jdbc_dependency()

@@ -17,7 +17,7 @@ def start_spark_session():
     return spark
 
 
-def get_schema():
+def get_predefined_schema():
     schema = StructType([StructField('School Unit Name', StringType(), False),
                          StructField('Elementary School Cases', IntegerType(), True),
                          StructField('Middle School Cases', IntegerType(), True),

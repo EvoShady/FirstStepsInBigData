@@ -5,7 +5,7 @@ from my_daframe_api import MyDataframeAPI
 def main():
     my_project_functions.import_jdbc_dependency()
     spark = my_project_functions.start_spark_session()
-    schema = my_project_functions.get_schema()
+    schema = my_project_functions.get_predefined_schema()
 
     my_df_api = MyDataframeAPI()
     my_df_api.read_data_to_dataframe_from_csv(spark, schema)

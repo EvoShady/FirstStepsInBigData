@@ -1,54 +1,21 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.types import IntegerType, StructField, StructType, StringType, DateType
-import findspark
+import helping_functions as my_project_functions
+from my_daframe_api import MyDataframeAPI
 
 
 def main():
-    findspark.add_packages('mysql:mysql-connector-java:8.0.11')
+    my_project_functions.import_jdbc_dependency()
+    spark = my_project_functions.start_spark_session()
+    schema = my_project_functions.get_schema()
 
-    spark = start_spark_session()
-    schema = get_schema()
-    data_frame = spark.read.csv('data/myFile0.csv',
-                                header=True,
-                                dateFormat='dd-MM-yyyy',
-                                schema=schema)
+    my_df_api = MyDataframeAPI()
+    my_df_api.read_data_to_dataframe_from_csv(spark, schema)
+    my_df_api.show_dataframe_and_schema()
 
-    data_frame.show()
-    data_frame.printSchema()
+    my_df_api.group_by_agg_round_avg()
+    my_df_api.sort_dataframe()
+    my_df_api.show_dataframe_and_schema()
 
-    prop = get_proprieties()
-    data_frame.write.jdbc('jdbc:mysql://localhost:3306/covid-19 incidence rate in schools',
-                          'test_table_1',
-                          'overwrite',
-                          prop)
-
-
-def start_spark_session():
-    spark = SparkSession \
-        .builder \
-        .master("local") \
-        .appName('COVID-19 incidence rate in schools') \
-        .config('spark.some.config.option', 'some-value') \
-        .getOrCreate()
-    return spark
-
-
-def get_schema():
-    schema = StructType([StructField('School Unit Name', StringType(), False),
-                         StructField('Elementary School Cases', IntegerType(), True),
-                         StructField('Middle School Cases', IntegerType(), True),
-                         StructField('High School Cases', IntegerType(), True),
-                         StructField('Gender', StringType(), True),
-                         StructField('Reporting Date', DateType(), True)])
-    return schema
-
-
-def get_proprieties():
-    props = {'user': 'root',
-             'password': 'strongPassword',
-             'driver': 'com.mysql.cj.jdbc.Driver',
-             'useSSL': 'false'}
-    return props
+    my_df_api.write_dataframe_to_database(my_project_functions.get_database_proprieties())
 
 
 if __name__ == '__main__':

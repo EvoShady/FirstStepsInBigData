@@ -1,5 +1,4 @@
 from pyspark.sql.functions import avg, round
-from pyspark.sql import dataframe
 
 """
 My Dataframe API Class
@@ -9,7 +8,7 @@ My Dataframe API Class
 class MyDataframeAPI:
 
     def __init__(self):
-        self.dataframe = dataframe
+        self.dataframe = ''
 
     def read_data_to_dataframe_from_csv(self, spark, path, schema):
         self.dataframe = spark.read.csv(path=path,

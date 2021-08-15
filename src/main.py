@@ -1,26 +1,44 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import to_date
-from pyspark.sql.types import IntegerType
+import helping_functions as hf
+from my_daframe_api import MyDataframeAPI
+
+"""
+Main Program
+"""
+
+PATH_CSV_1 = '../data/covid19_data.csv'
+PATH_CSV_2 = '../data/covid19_data_2.csv'
+TABLE_NAME = 'table_after_transformations'
+DUMMY_TABLE_NAME = 'dummy_table_after_transformations'
 
 
 def main():
-    spark = SparkSession \
-        .builder \
-        .master("local") \
-        .appName('COVID-19 incidence rate in schools') \
-        .config("spark.some.config.option", "some-value") \
-        .getOrCreate()
+    hf.import_jdbc_dependency()
+    spark = hf.start_spark_session()
 
-    # Read from csv file
-    df = spark.read.option('multiline', 'true').csv('data/myFile0.csv', header=True, dateFormat='dd-MM-yyyy')
-    # Set column types
-    df = df.withColumn('Elementary School Cases', df['Elementary School Cases'].cast(IntegerType()))
-    df = df.withColumn('Middle School Cases', df['Middle School Cases'].cast(IntegerType()))
-    df = df.withColumn('High School Cases', df['High School Cases'].cast(IntegerType()))
-    df = df.withColumn('Reporting Date', to_date(df['Reporting Date'], 'dd-MM-yyyy'))
-    # Displays the content of the DataFrame to stdout
-    df.show()
-    df.printSchema()
+    hf.remake_initial_table_to_db(spark, PATH_CSV_1, TABLE_NAME)
+
+    df_api_1 = MyDataframeAPI()
+    df_api_1.read_dataframe_from_database(spark, TABLE_NAME, hf.get_database_proprieties())
+    df_api_1.group_by_agg_round_avg()
+    df_api_1.sort_dataframe()
+    df_api_1.show_dataframe_and_schema()
+
+    df_api_2 = MyDataframeAPI()
+    df_api_2.read_data_to_dataframe_from_csv(spark, PATH_CSV_2, hf.get_predefined_schema())
+    df_api_2.group_by_agg_round_avg()
+    df_api_2.sort_dataframe()
+    df_api_2.show_dataframe_and_schema()
+
+    df_api_1.union_dataframes(df_api_2.dataframe)
+    df_api_1.group_by_agg_round_avg()
+    df_api_1.sort_dataframe()
+    df_api_1.show_dataframe_and_schema()
+    # workaround
+    df_api_1.write_dataframe_to_database(DUMMY_TABLE_NAME, hf.get_database_proprieties())
+
+    df_api_1.read_dataframe_from_database(spark, DUMMY_TABLE_NAME, hf.get_database_proprieties())
+    df_api_1.write_dataframe_to_database(TABLE_NAME, hf.get_database_proprieties())
+    hf.drop_dummy_table(DUMMY_TABLE_NAME)
 
 
 if __name__ == '__main__':

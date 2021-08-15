@@ -1,6 +1,8 @@
 import findspark
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DateType
+from src.my_daframe_api import MyDataframeAPI
+import mysql.connector
 
 """
 My Project Helping Functions
@@ -37,3 +39,19 @@ def get_database_proprieties():
                    'driver': 'com.mysql.cj.jdbc.Driver',
                    'useSSL': 'false'}
     return proprieties
+
+
+def remake_initial_table_to_db(spark, path, table_name):
+    my_df = MyDataframeAPI()
+    my_df.read_data_to_dataframe_from_csv(spark, path, get_predefined_schema())
+    my_df.group_by_agg_round_avg()
+    my_df.sort_dataframe()
+    my_df.write_dataframe_to_database(table_name, get_database_proprieties())
+
+
+def drop_dummy_table(table_name):
+    conn = mysql.connector.connect(
+        user='root', password='strongPassword', host='localhost', database='covid-19 incidence rate in schools')
+    cursor = conn.cursor()
+    cursor.execute(f'DROP TABLE IF EXISTS {table_name}')
+    conn.close()

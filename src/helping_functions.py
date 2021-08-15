@@ -49,9 +49,17 @@ def remake_initial_table_to_db(spark, path, table_name):
     my_df.write_dataframe_to_database(table_name, get_database_proprieties())
 
 
-def drop_dummy_table(table_name):
+def drop_table(table_name):
     conn = mysql.connector.connect(
         user='root', password='strongPassword', host='localhost', database='covid-19 incidence rate in schools')
     cursor = conn.cursor()
     cursor.execute(f'DROP TABLE IF EXISTS {table_name}')
+    conn.close()
+
+
+def rename_table(table_name, new_table_name):
+    conn = mysql.connector.connect(
+        user='root', password='strongPassword', host='localhost', database='covid-19 incidence rate in schools')
+    cursor = conn.cursor()
+    cursor.execute(f'RENAME TABLE {table_name} to {new_table_name}')
     conn.close()

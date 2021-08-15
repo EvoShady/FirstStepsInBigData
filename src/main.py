@@ -33,12 +33,11 @@ def main():
     df_api_1.group_by_agg_round_avg()
     df_api_1.sort_dataframe()
     df_api_1.show_dataframe_and_schema()
+
     # workaround
     df_api_1.write_dataframe_to_database(DUMMY_TABLE_NAME, hf.get_database_proprieties())
-
-    df_api_1.read_dataframe_from_database(spark, DUMMY_TABLE_NAME, hf.get_database_proprieties())
-    df_api_1.write_dataframe_to_database(TABLE_NAME, hf.get_database_proprieties())
-    hf.drop_dummy_table(DUMMY_TABLE_NAME)
+    hf.drop_table(TABLE_NAME)
+    hf.rename_table(DUMMY_TABLE_NAME, TABLE_NAME)
 
 
 if __name__ == '__main__':

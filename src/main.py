@@ -19,8 +19,6 @@ def main():
 
     df_api_1 = MyDataframeAPI()
     df_api_1.read_dataframe_from_database(spark, TABLE_NAME, hf.get_database_proprieties())
-    df_api_1.group_by_agg_round_avg()
-    df_api_1.sort_dataframe()
     df_api_1.show_dataframe_and_schema()
 
     df_api_2 = MyDataframeAPI()
